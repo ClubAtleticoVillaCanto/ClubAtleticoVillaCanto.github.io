@@ -1,11 +1,11 @@
 {
   "club": {
     "name": "Club Atlético Villa Canto",
-    "logo": "images/logo.png",
+    "logo": "/images/logo.png",
     "socialLinks": {
-      "facebook": "https://www.facebook.com/tucub",
-      "instagram": "https://www.instagram.com/tucub",
-      "youtube": "https://www.youtube.com/tucub"
+      "facebook": "#",
+      "instagram": "#",
+      "youtube": "#"
     },
     "history": "Fundado en 2019, el Club Atlético Villa Canto nació con la misión de fomentar el amor por el fútbol en los más pequeños, priorizando el desarrollo personal y la formación en valores. Desde entonces, hemos crecido de la mano de cada generación, construyendo una gran familia.",
     "values": [
@@ -16,11 +16,18 @@
     ],
     "facilities": "Contamos con modernas canchas de césped sintético, vestuarios equipados y una zona de esparcimiento para padres y familiares. ¡Un espacio ideal para que nuestros niños disfruten y aprendan!",
     "contact": {
-      "phone": "+54 9 11 1234-5678",
-      "email": "info@villacanto.com",
+      "phone": "(Todavia no C ;])",
+      "email": "(tampoco C)",
       "address": "Calle Principal 456, Villa Canto, Buenos Aires.",
-      "mapIframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m26!1m12!1m3!1d3326.2068543051523!2d-60.30103771852971!3d-33.371685458820686!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m11!3e6!4m3!3m2!1d-33.3726086!2d-60.2997217!4m5!1s0x95b767ede0081a27%3A0xb0a69b78fc1d0c8!2sPedro%20Raota%20350%2C%20Provincia%20de%20Buenos%20Aires!3m2!1d-33.3726037!2d-60.2998577!5e0!3m2!1ses-419!2sar!4v1748662235545!5m2!1ses-419!2sar\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>"
+      "mapaIframe": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3331.9411006341747!2d-60.3024326!3d-33.3726037!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95b767ede0081a27%3A0xb0a69b78fc1d0c8!2sClub%20atl%C3%A9tico%20Villa%20Canto!5e0!3m2!1ses-419!2sar!4v1748678177205!5m2!1ses-419!2sar\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>"
     }
+  },
+  "hero": {
+    "titulo": "¡La Pasión del Baby Fútbol!",
+    "subtitulo": "Formando Campeones Dentro y Fuera de la Cancha",
+    "botonTexto": "Conoce Nuestro Club",
+    "botonLink": "#nuestro-club",
+    "bannerImage": "/images/banner.jpg"
   },
   "categories": [
     {
@@ -28,20 +35,6 @@
       "name": "Categoría 2013",
       "photo": "https://www.ole.com.ar/2024/11/21/P-9b815E0_860x575__1.jpg",
       "description": "Conoce a los talentosos chicos de la categoría 2013. ¡Grandes promesas con mucha garra y pasión por el fútbol!",
-      "players": [
-        {
-          "id": "jug2013_001",
-          "nombre": "Juan Pérez",
-          "apodo": "El Tractor",
-          "imagen": "https://www.lanacion.com.ar/resizer/v2/la-seleccion-argentina-con-la-presencia-del-5BIG3DI72BALRIXKNSKZTHB47E.JPG?auth=a7e46ec5176dc9cfbbfe6879a2dd630cab9783c13212d7c9ad9d512846ffa387&width=420&height=280&quality=70&smart=true"
-        },
-        {
-          "id": "jug2013_002",
-          "nombre": "Pedro Gómez",
-          "apodo": "El Rayo",
-          "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmz6XHPsV6BeOIa1350n8Q7SIgwJXS3F1NGg&s"
-        }
-      ],
       "fixture": [
         {
           "fecha": "1",
@@ -62,20 +55,6 @@
       "name": "Categoría 2014",
       "photo": "https://www.ole.com.ar/2024/11/21/P-9b815E0_860x575__1.jpg",
       "description": "Conoce a los talentosos chicos de la categoría 2014. ¡Grandes promesas con mucha garra y pasión por el fútbol!",
-      "players": [
-        {
-          "id": "jug3",
-          "nombre": "Nuevo Jugadorcfhrs",
-          "apodo": "Sin Apodohcehf",
-          "imagen": "https://www.lanacion.com.ar/resizer/v2/la-seleccion-argentina-con-la-presencia-del-5BIG3DI72BALRIXKNSKZTHB47E.JPG?auth=a7e46ec5176dc9cfbbfe6879a2dd630cab9783c13212d7c9ad9d512846ffa387&width=420&height=280&quality=70&smart=true"
-        },
-        {
-          "id": "jug4",
-          "nombre": "Nuevo Jugadorrgerb",
-          "apodo": "Sin Apodossssgre",
-          "imagen": "https://www.lanacion.com.ar/resizer/v2/la-seleccion-argentina-con-la-presencia-del-5BIG3DI72BALRIXKNSKZTHB47E.JPG?auth=a7e46ec5176dc9cfbbfe6879a2dd630cab9783c13212d7c9ad9d512846ffa387&width=420&height=280&quality=70&smart=true"
-        }
-      ],
       "fixture": [
         {
           "fecha": "27/01/2028",
@@ -84,6 +63,48 @@
           "resultado": "3-1"
         }
       ]
+    },
+    {
+      "id": "2015",
+      "name": "Categoría 2015",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
+    },
+    {
+      "id": "2016",
+      "name": "Categoría 2016",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
+    },
+    {
+      "id": "2017",
+      "name": "Categoría 2017",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
+    },
+    {
+      "id": "2018",
+      "name": "Categoría 2018",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
+    },
+    {
+      "id": "2019",
+      "name": "Categoría 2019",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
+    },
+    {
+      "id": "2020",
+      "name": "Categoría 2020",
+      "photo": "https://via.placeholder.com/600x400?text=Nueva+Categoría",
+      "description": "Descripción de la nueva categoría.",
+      "fixture": []
     }
   ],
   "news": [
