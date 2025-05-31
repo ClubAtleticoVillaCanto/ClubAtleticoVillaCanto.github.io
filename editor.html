@@ -18,38 +18,31 @@
             color: #2c3e50;
         }
         .section-container {
-            /* CAMBIO CLAVE AQUÍ: Para apilar paneles verticalmente */
-            display: block; /* Los divs se comportan como bloques por defecto */
+            display: block;
             margin-top: 20px;
-            max-width: 900px; /* Limita el ancho del editor para una mejor legibilidad */
-            margin-left: auto; /* Centra el contenedor */
-            margin-right: auto; /* Centra el contenedor */
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .panel {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px; /* Espacio entre los paneles apilados */
-            /* En pantallas muy pequeñas, asegura que no haya un padding excesivo */
-            box-sizing: border-box; /* Incluye padding y border en el width/height */
-            width: 100%; /* Asegura que cada panel ocupe todo el ancho disponible del section-container */
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            width: 100%;
         }
-        /* Elimina el margen inferior del último panel para que no haya espacio extra al final */
         .panel:last-of-type {
             margin-bottom: 0;
         }
-
-        /* El panel del JSON también debe apilarse bien */
-        .panel.json-panel { /* Puedes añadir esta clase en el HTML si quieres estilizarlo aparte */
+        .panel.json-panel {
             margin-top: 20px;
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
-            margin-bottom: 20px; /* Si hay algo debajo del panel JSON, añade margen */
+            margin-bottom: 20px;
         }
-
-
         .panel h2 {
             margin-top: 0;
             color: #34495e;
@@ -187,13 +180,13 @@
         }
         .value-input-wrapper input {
             width: auto;
-            min-width: 100px; /* Asegura que el input no sea demasiado pequeño */
+            min-width: 100px;
             border: none;
             margin: 0;
             padding: 5px;
             box-sizing: border-box;
             outline: none;
-            background: transparent; /* Permite que el color de fondo del contenedor se vea */
+            background: transparent;
         }
     </style>
 </head>
@@ -266,7 +259,8 @@
 
     </div>
 
-    <div class="panel json-panel"> <h2>JSON Generado</h2>
+    <div class="panel json-panel">
+        <h2>JSON Generado</h2>
         <textarea id="json-output" class="json-output" readonly></textarea>
         <button onclick="copiarJson()">Copiar JSON</button>
         <button onclick="guardarDatos()">Guardar y Descargar data.json</button>
@@ -276,7 +270,7 @@
     <script>
         let data = {
             clubInfo: {
-                name: "Club Atlético Villa Canto", // Editable por input, no fijo
+                name: "Club Atlético Villa Canto",
                 historia: "", valores: [], instalaciones: "",
                 telefono: "", email: "", direccion: "",
                 facebook: "", instagram: "", youtube: "", mapaIframe: ""
@@ -287,7 +281,8 @@
             descuentos: [],
             nextId: {
                 categoria: 1,
-                jugador: 1,
+                // Reiniciaremos jugadorId para asegurarnos de que cada jugador tenga un ID único
+                jugador: 1, // Nuevo contador global para jugadores
                 noticia: 1,
                 galeria: 1
             }
@@ -303,56 +298,69 @@
                 }
                 const rawData = await response.json();
 
-                // Mapear data.json (del frontend) a la estructura interna del editor (data)
                 data.clubInfo = {
                     name: rawData.club?.name || "Club Atlético Villa Canto",
-                    // No cargamos 'logo' aquí si no es editable en el editor
-                    history: rawData.club?.history || "", // CORREGIDO: de 'historia' a 'history' para coincidir con data.json
-                    values: rawData.club?.values || [],   // CORREGIDO: de 'valores' a 'values' para coincidir con data.json
-                    facilities: rawData.club?.facilities || "", // CORREGIDO: de 'instalaciones' a 'facilities' para coincidir con data.json
+                    history: rawData.club?.history || "",
+                    values: rawData.club?.values || [],
+                    facilities: rawData.club?.facilities || "",
                     telefono: rawData.club?.contact?.phone || "",
                     email: rawData.club?.contact?.email || "",
                     direccion: rawData.club?.contact?.address || "",
                     facebook: rawData.club?.socialLinks?.facebook || "#",
                     instagram: rawData.club?.socialLinks?.instagram || "#",
                     youtube: rawData.club?.socialLinks?.youtube || "#",
-                    mapaIframe: rawData.club?.contact?.mapaIframe || "" // ¡¡¡CORREGIDO ESTE CAMPO!!!
+                    mapaIframe: rawData.club?.contact?.mapaIframe || ""
                 };
 
-                // Asegurar que las propiedades de clubInfo se carguen correctamente
-                // Si tienes los nombres de las propiedades en data.json diferentes a los del editor (ej. history vs historia)
-                // debes asegurarte que la asignación sea correcta.
-                // Basado en el data.json que enviaste, los nombres son: history, values, facilities
-                // Por eso, la carga del editor debería mapearlos a sus nombres internos (historia, valores, instalaciones)
-                data.clubInfo.historia = rawData.club?.history || "";
-                data.clubInfo.valores = rawData.club?.values || [];
-                data.clubInfo.instalaciones = rawData.club?.facilities || "";
+                // Asignación correcta de propiedades de data.json a la estructura interna del editor
+                data.clubInfo.historia = data.clubInfo.history; // Mantener la consistencia con el editor
+                data.clubInfo.valores = data.clubInfo.values;
+                data.clubInfo.instalaciones = data.clubInfo.facilities;
 
-                // NO CARGAMOS DATOS DE LA SECCIÓN HERO AQUÍ - SERÁN FIJOS AL GUARDAR
-
-                data.categorias = rawData.categories?.map(cat => ({
-                    id: `cat${cat.id}`, // Convertir de "2013" a "cat2013" para el editor
-                    nombre: cat.name,
-                    fotoGrupal: cat.photo,
-                    descripcion: cat.description,
-                    jugadores: cat.players,
-                    fixture: cat.fixture
-                })) || [];
+                // Mapear categorías y jugadores correctamente
+                data.categorias = rawData.categories?.map(cat => {
+                    const mappedCat = {
+                        id: `cat${cat.id}`,
+                        nombre: cat.name,
+                        fotoGrupal: cat.photo,
+                        descripcion: cat.description,
+                        jugadores: cat.players || [], // Asegurar que sea un array
+                        fixture: cat.fixture || []    // Asegurar que sea un array
+                    };
+                    // Asegurar que los IDs de jugadores existentes se actualicen si es necesario
+                    mappedCat.jugadores.forEach(jug => {
+                        if (!jug.id) {
+                            jug.id = `jug${data.nextId.jugador++}`; // Asignar un ID si no tiene
+                        }
+                        // Actualizar nextId.jugador si el ID existente es mayor
+                        const existingJugIdNum = parseInt(jug.id.replace('jug', ''));
+                        if (!isNaN(existingJugIdNum) && existingJugIdNum >= data.nextId.jugador) {
+                            data.nextId.jugador = existingJugIdNum + 1;
+                        }
+                    });
+                    return mappedCat;
+                }) || [];
 
                 data.noticias = rawData.news || [];
                 data.galeria = rawData.gallery || [];
                 data.descuentos = rawData.discounts || [];
 
-                // Inicializar nextId si no existe (o recalcular si quieres IDs consecutivos basados en datos existentes)
+                // Recalcular nextId si no existe (o si queremos IDs consecutivos)
                 if (!data.nextId) {
                     data.nextId = {
-                        categoria: data.categorias.length > 0 ? Math.max(...data.categorias.map(c => parseInt(c.id.replace('cat', '')))) + 1 : 1,
-                        jugador: 1, // Esto es más complicado ya que los jugadores están anidados, podrías necesitar un loop
-                        noticia: data.noticias.length > 0 ? Math.max(...data.noticias.map(n => parseInt(n.id.replace('not', '')))) + 1 : 1,
-                        galeria: data.galeria.length > 0 ? Math.max(...data.galeria.map(g => parseInt(g.id.replace('gal', '')))) + 1 : 1
+                        categoria: 1,
+                        jugador: 1,
+                        noticia: 1,
+                        galeria: 1
                     };
                 }
-
+                // Recalcular nextId.categoria
+                data.nextId.categoria = data.categorias.length > 0 ? Math.max(...data.categorias.map(c => parseInt(c.id.replace('cat', '')) || 0)) + 1 : 1;
+                // Recalcular nextId.noticia
+                data.nextId.noticia = data.noticias.length > 0 ? Math.max(...data.noticias.map(n => parseInt(n.id.replace('not', '')) || 0)) + 1 : 1;
+                // Recalcular nextId.galeria
+                data.nextId.galeria = data.galeria.length > 0 ? Math.max(...data.galeria.map(g => parseInt(g.id.replace('gal', '')) || 0)) + 1 : 1;
+                // nextId.jugador ya lo manejamos arriba al mapear
 
                 renderClubInfo();
                 renderCategorias();
@@ -388,7 +396,7 @@
         function renderClubInfo() {
             document.getElementById('club-name').value = data.clubInfo.name || '';
             document.getElementById('club-historia').value = data.clubInfo.historia || '';
-            renderValueChips(); // Renderizar los chips de valores
+            renderValueChips();
             document.getElementById('club-instalaciones').value = data.clubInfo.instalaciones || '';
             document.getElementById('club-telefono').value = data.clubInfo.telefono || '';
             document.getElementById('club-email').value = data.clubInfo.email || '';
@@ -401,17 +409,13 @@
 
         function renderValueChips() {
             const container = document.getElementById('club-valores-chips');
-            container.innerHTML = ''; // Limpiar antes de renderizar
-            
-            // Añadir chips existentes
+            container.innerHTML = '';
             data.clubInfo.valores.forEach((valor, index) => {
                 const chip = document.createElement('span');
                 chip.classList.add('value-chip');
                 chip.innerHTML = `${valor} <span class="value-chip-remove" onclick="removeValue(${index})">×</span>`;
                 container.appendChild(chip);
             });
-
-            // Añadir el input para nuevos valores
             const inputWrapper = document.createElement('div');
             inputWrapper.classList.add('value-input-wrapper');
             const input = document.createElement('input');
@@ -421,33 +425,31 @@
             input.onkeydown = handleValueInput;
             inputWrapper.appendChild(input);
             container.appendChild(inputWrapper);
-            
-            // Poner el foco en el input al final
             input.focus();
         }
 
         function handleValueInput(event) {
             if (event.key === 'Enter' || event.key === ',') {
-                event.preventDefault(); // Evita que se introduzca la coma o un salto de línea
+                event.preventDefault();
                 const input = event.target;
                 const value = input.value.trim();
                 if (value) {
                     data.clubInfo.valores.push(value);
-                    input.value = ''; // Limpiar el input
-                    renderValueChips(); // Volver a renderizar para mostrar el nuevo chip
+                    input.value = '';
+                    renderValueChips();
                 }
             }
         }
 
         function removeValue(index) {
             data.clubInfo.valores.splice(index, 1);
-            renderValueChips(); // Volver a renderizar para quitar el chip
+            renderValueChips();
         }
 
 
         function renderCategorias() {
             const categoriasList = document.getElementById('categorias-list');
-            categoriasList.innerHTML = ''; // Limpiar la lista existente
+            categoriasList.innerHTML = '';
             data.categorias.forEach((cat, catIdx) => {
                 const catDiv = document.createElement('div');
                 catDiv.classList.add('array-item');
@@ -467,6 +469,8 @@
                     <div id="jugadores-list-${catIdx}">
                         ${(cat.jugadores || []).map((jug, jugIdx) => `
                             <div class="array-item">
+                                <label>ID Jugador:</label>
+                                <input type="text" value="${jug.id || ''}" onchange="updateJugador(${catIdx}, ${jugIdx}, 'id', this.value)">
                                 <label>Nombre:</label>
                                 <input type="text" value="${jug.nombre}" onchange="updateJugador(${catIdx}, ${jugIdx}, 'nombre', this.value)">
                                 <label>Apodo:</label>
@@ -484,7 +488,7 @@
                         ${(cat.fixture || []).map((part, partIdx) => `
                             <div class="array-item">
                                 <label>Fecha:</label>
-                                <input type="text" value="${part.fecha}" onchange="updatePartido(${catIdx}, ${partIdx}, 'fecha', this.value)">
+                                <input type="date" value="${part.fecha}" onchange="updatePartido(${catIdx}, ${partIdx}, 'fecha', this.value)">
                                 <label>Local:</label>
                                 <input type="text" value="${part.local}" onchange="updatePartido(${catIdx}, ${partIdx}, 'local', this.value)">
                                 <label>Visitante:</label>
@@ -577,11 +581,13 @@
 
         function updateCategoria(catIdx, campo, valor) {
             if (campo === 'id') {
+                const oldId = data.categorias[catIdx].id;
                 data.categorias[catIdx].id = `cat${valor}`;
+                // Actualizar referencias si es necesario, aunque con esta estructura no es crítico
             } else {
                 data.categorias[catIdx][campo] = valor;
             }
-            renderCategorias(); // Re-render para actualizar IDs y nombres
+            renderCategorias();
         }
 
         function updateJugador(catIdx, jugIdx, campo, valor) {
@@ -614,8 +620,8 @@
 
         // --- Funciones de Agregación ---
         function addCategoria() {
-            const newYear = new Date().getFullYear() - data.categorias.length; // Año tentativo
-            const newId = `cat${newYear}`;
+            const newYear = new Date().getFullYear() - data.categorias.length;
+            const newId = `cat${data.nextId.categoria++}`; // Usar nextId para asegurar unicidad
             data.categorias.push({
                 id: newId,
                 nombre: `Nueva Categoría ${newYear}`,
@@ -628,18 +634,24 @@
         }
 
         function addJugador(catIdx) {
+            if (!data.categorias[catIdx].jugadores) {
+                data.categorias[catIdx].jugadores = []; // Asegura que el array exista
+            }
             data.categorias[catIdx].jugadores.push({
-                id: `jug${data.nextId.jugador++}`,
+                id: `jug${data.nextId.jugador++}`, // Usar el contador global de jugadores
                 nombre: "Nuevo Jugador",
                 apodo: "Sin Apodo",
                 imagen: "https://via.placeholder.com/150?text=Nuevo+Jugador"
             });
-            renderCategorias();
+            renderCategorias(); // Volver a renderizar la lista completa de categorías y sus jugadores
         }
 
         function addPartido(catIdx) {
+            if (!data.categorias[catIdx].fixture) {
+                data.categorias[catIdx].fixture = []; // Asegura que el array exista
+            }
             data.categorias[catIdx].fixture.push({
-                fecha: new Date().toISOString().slice(0, 10), // Fecha actualYYYY-MM-DD
+                fecha: new Date().toISOString().slice(0, 10),
                 local: "Equipo Local",
                 visitante: "Equipo Visitante",
                 resultado: "0-0"
@@ -727,7 +739,7 @@
              return {
                 club: {
                     name: data.clubInfo.name || "Club Atlético Villa Canto",
-                    logo: "/images/logo.png", // <--- RUTA FIJA DEL LOGO
+                    logo: "/images/logo.png",
                     socialLinks: {
                         facebook: data.clubInfo.facebook || "#",
                         instagram: data.clubInfo.instagram || "#",
@@ -740,7 +752,7 @@
                         phone: data.clubInfo.telefono || "",
                         email: data.clubInfo.email || "",
                         address: data.clubInfo.direccion || "",
-                        mapaIframe: data.clubInfo.mapaIframe || "" // Este valor viene directamente del textarea del editor
+                        mapaIframe: data.clubInfo.mapaIframe || ""
                     }
                 },
                 hero: {
@@ -748,14 +760,14 @@
                     subtitulo: "Formando Campeones Dentro y Fuera de la Cancha",
                     botonTexto: "Conoce Nuestro Club",
                     botonLink: "#nuestro-club",
-                    bannerImage: "/images/banner.jpg" // <--- RUTA FIJA DEL BANNER
+                    bannerImage: "/images/banner.jpg"
                 },
                 categories: data.categorias.map(cat => ({
                     id: cat.id.replace('cat', ''),
                     name: cat.nombre,
                     photo: cat.fotoGrupal,
                     description: cat.descripcion,
-                    players: cat.players,
+                    players: cat.jugadores, // Mapear de 'jugadores' a 'players' para data.json
                     fixture: cat.fixture
                 })),
                 news: data.noticias,
