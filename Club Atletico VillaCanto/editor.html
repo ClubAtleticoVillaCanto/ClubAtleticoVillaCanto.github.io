@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor del Club Atlético Villa Canto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos globales y generales */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 20px;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #A50000; /* Rojo del club Villa Canto */
+        }
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .panel {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .panel h2 {
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Estilos para Categorías y Jugadores */
+        .categoria, .noticia-item, .galeria-item, .descuento-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .categoria h3, .jugador-item h4, .noticia-item h3, .galeria-item h3, .descuento-item h3 {
+            color: #A50000; /* Rojo del club */
+            margin-bottom: 10px;
+        }
+        .jugador-item, .partido-item {
+            border: 1px dashed #e0e0e0;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #fff;
+            border-radius: 6px;
+            position: relative; /* Para el botón de eliminar */
+        }
+        .jugador-item button.delete, .partido-item button.delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 8px;
+            font-size: 0.8em;
+        }
+
+        /* Estilos para formularios y botones */
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: calc(100% - 12px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #A50000; /* Rojo principal del club */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #CC0000; /* Rojo más oscuro */
+        }
+        button.delete {
+            background-color: #d32f2f;
+        }
+        button.delete:hover {
+            background-color: #ef5350;
+        }
+        .add-button {
+            background-color: #008000; /* Verde del balón */
+        }
+        .add-button:hover {
+            background-color: #00AA00; /* Verde más oscuro */
+        }
+
+        /* Sección de acciones (botones de descarga/copia) */
+        .acciones-btn {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .acciones-btn button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+        }
+
+        /* Mensajes de alerta */
+        .alert-message {
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            display: none; /* Oculto por defecto */
+        }
+        .alert-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Contenedor de salida JSON para copiar */
+        #json-output-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        #json-output {
+            width: calc(100% - 20px);
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            background-color: #e9e9e9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        /* Previsualización de imagen */
+        .image-preview {
+            max-width: 150px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        textarea {
+            min-height: 80px; /* Para descripción y contenido de noticias */
+        }
+    </style>
+</head>
+<body>
+    <h1>Editor del Club Atlético Villa Canto</h1>
+
+    <div class="section-container">
+        <div class="panel" id="club-info-panel">
+            <h2>Información del Club</h2>
+            <label>Historia:</label>
+            <textarea id="club-historia" onchange="updateClubInfo('historia', this.value)"></textarea>
+
+            <label>Valores (separados por coma):</label>
+            <input type="text" id="club-valores" onchange="updateClubInfo('valores', this.value.split(',').map(v => v.trim()))">
+
+            <label>Instalaciones:</label>
+            <textarea id="club-instalaciones" onchange="updateClubInfo('instalaciones', this.value)"></textarea>
+
+            <label>Teléfono:</label>
+            <input type="text" id="club-telefono" onchange="updateClubInfo('telefono', this.value)">
+
+            <label>Email:</label>
+            <input type="text" id="club-email" onchange="updateClubInfo('email', this.value)">
+
+            <label>Dirección:</label>
+            <input type="text" id="club-direccion" onchange="updateClubInfo('direccion', this.value)">
+
+            <label>Facebook URL:</label>
+            <input type="text" id="club-facebook" onchange="updateClubInfo('facebook', this.value)">
+
+            <label>Instagram URL:</label>
+            <input type="text" id="club-instagram" onchange="updateClubInfo('instagram', this.value)">
+
+            <label>YouTube URL:</label>
+            <input type="text" id="club-youtube" onchange="updateClubInfo('youtube', this.value)">
+
+            <label>Google Maps Iframe HTML:</label>
+            <textarea id="club-mapaIframe" onchange="updateClubInfo('mapaIframe', this.value)" rows="5"></textarea>
+        </div>
+
+        <div class="panel" id="categorias-panel">
+            <h2>Gestión de Categorías</h2>
+            <div id="categorias-container">
+            </div>
+            <button class="add-button" onclick="agregarCategoria()">Agregar Nueva Categoría</button>
+        </div>
+
+        <div class="panel" id="noticias-panel">
+            <h2>Gestión de Noticias</h2>
+            <div id="noticias-container">
+            </div>
+            <button class="add-button" onclick="agregarNoticia()">Agregar Nueva Noticia</button>
+        </div>
+
+        <div class="panel" id="galeria-panel">
+            <h2>Gestión de Galería</h2>
+            <div id="galeria-container">
+            </div>
+            <button class="add-button" onclick="agregarGaleria()">Agregar Nueva Imagen a Galería</button>
+        </div>
+
+        <div class="panel" id="descuentos-panel" style="display: none;">
+            <h2>Gestión de Descuentos (Opcional, para ventas de merchandising)</h2>
+            <div id="descuentos-container"></div>
+            <button class="add-button" onclick="agregarDescuento()">Agregar Nuevo Descuento</button>
+        </div>
+
+        <div class="acciones-btn">
+            <button onclick="guardarDatos()">Guardar y Descargar data.json</button>
+            <button onclick="mostrarJsonParaCopiar()">Copiar Código JSON</button>
+        </div>
+
+        <div id="json-output-container" style="display: none;">
+            <h2>JSON de `data.json`</h2>
+            <textarea id="json-output" readonly></textarea>
+            <button onclick="copiarJson()">Copiar al Portapapeles</button>
+        </div>
+    </div>
+
+    <div id="message" class="alert-message"></div>
+
+    <script>
+        let data = {
+            clubInfo: {},
+            categorias: [],
+            noticias: [],
+            galeria: [],
+            descuentos: [], // Mantener por si acaso, aunque no esté en el frontend del club
+            nextId: {
+                categoria: 1, // Este es un contador, pero el ID ahora será el año
+                jugador: 1,
+                noticia: 1,
+                galeria: 1
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', cargarDatosDesdeArchivo);
+
+        async function cargarDatosDesdeArchivo() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                data = await response.json();
+
+                // Inicializar nextId si no existe
+                if (!data.nextId) {
+                    data.nextId = { categoria: 1, jugador: 1, noticia: 1, galeria: 1 };
+                }
+                // Asegurarse de que las categorías, noticias y galería existan como arrays
+                data.categorias = data.categorias || [];
+                data.noticias = data.noticias || [];
+                data.galeria = data.galeria || [];
+                data.descuentos = data.descuentos || []; // Asegurar que descuentos exista
+
+                renderClubInfo();
+                renderCategorias();
+                renderNoticias();
+                renderGaleria();
+                renderDescuentos(); // Para que el editor pueda manejarlos si están en el JSON
+            } catch (error) {
+                console.error('Error al cargar data.json:', error);
+                alert('No se pudo cargar data.json. Asegúrate de que existe y es un JSON válido. Se inicializará con valores por defecto.');
+                // Si no se carga, inicializa con datos vacíos para que se pueda empezar a editar
+                data = {
+                    clubInfo: {
+                        historia: "", valores: [], instalaciones: "",
+                        telefono: "", email: "", direccion: "",
+                        facebook: "", instagram: "", youtube: "", mapaIframe: ""
+                    },
+                    categorias: [],
+                    noticias: [],
+                    galeria: [],
+                    descuentos: [],
+                    nextId: { categoria: 1, jugador: 1, noticia: 1, galeria: 1 }
+                };
+                renderClubInfo();
+                renderCategorias();
+                renderNoticias();
+                renderGaleria();
+                renderDescuentos();
+            }
+        }
+
+        // --- Funciones de Renderizado ---
+        function renderClubInfo() {
+            document.getElementById('club-historia').value = data.clubInfo.historia || '';
+            document.getElementById('club-valores').value = (data.clubInfo.valores || []).join(', ');
+            document.getElementById('club-instalaciones').value = data.clubInfo.instalaciones || '';
+            document.getElementById('club-telefono').value = data.clubInfo.telefono || '';
+            document.getElementById('club-email').value = data.clubInfo.email || '';
+            document.getElementById('club-direccion').value = data.clubInfo.direccion || '';
+            document.getElementById('club-facebook').value = data.clubInfo.facebook || '';
+            document.getElementById('club-instagram').value = data.clubInfo.instagram || '';
+            document.getElementById('club-youtube').value = data.clubInfo.youtube || '';
+            document.getElementById('club-mapaIframe').value = data.clubInfo.mapaIframe || '';
+        }
+
+        function renderCategorias() {
+            const container = document.getElementById('categorias-container');
+            container.innerHTML = '';
+            data.categorias.forEach((categoria, catIdx) => {
+                const categoriaDiv = document.createElement('div');
+                categoriaDiv.classList.add('categoria');
+                categoriaDiv.innerHTML = `
+                    <h3>
+                        Nombre Categoría: <input type="text" value="${categoria.nombre}" onchange="updateCategoria(${catIdx}, 'nombre', this.value)">
+                        <button class="delete" onclick="eliminarCategoria(${catIdx})">Eliminar Categoría</button>
+                    </h3>
+                    <label>ID del archivo (ej. cat2014):</label>
+                    <input type="text" value="${categoria.id}" onchange="updateCategoria(${catIdx}, 'id', this.value)" title="Este ID debe coincidir con el nombre del archivo HTML (ej. cat2014.html)">
+                    <label>Foto Grupal URL:</label>
+                    <input type="text" value="${categoria.fotoGrupal}" onchange="updateCategoria(${catIdx}, 'fotoGrupal', this.value)" oninput="updateImagePreview(this.nextElementSibling, this.value)">
+                    <img src="${categoria.fotoGrupal}" alt="Foto Grupal" class="image-preview" onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+                    <label>Descripción:</label>
+                    <textarea onchange="updateCategoria(${catIdx}, 'descripcion', this.value)">${categoria.descripcion}</textarea>
+
+                    <h4>Jugadores:</h4>
+                    <div id="jugadores-container-${catIdx}"></div>
+                    <button class="add-button" onclick="agregarJugador(${catIdx})">Agregar Jugador</button>
+
+                    <h4>Fixture y Resultados:</h4>
+                    <div id="fixture-container-${catIdx}"></div>
+                    <button class="add-button" onclick="agregarPartido(${catIdx})">Agregar Partido</button>
+                `;
+                container.appendChild(categoriaDiv);
+                renderJugadores(catIdx);
+                renderFixture(catIdx);
+            });
+        }
+
+        function renderJugadores(catIdx) {
+            const container = document.getElementById(`jugadores-container-${catIdx}`);
+            container.innerHTML = '';
+            data.categorias[catIdx].jugadores.forEach((jugador, jugIdx) => {
+                const jugadorDiv = document.createElement('div');
+                jugadorDiv.classList.add('jugador-item');
+                jugadorDiv.innerHTML = `
+                    <button class="delete" onclick="eliminarJugador(${catIdx}, ${jugIdx})">X</button>
+                    <label>Nombre:</label>
+                    <input type="text" value="${jugador.nombre}" onchange="updateJugador(${catIdx}, ${jugIdx}, 'nombre', this.value)">
+                    <label>Apodo:</label>
+                    <input type="text" value="${jugador.apodo}" onchange="updateJugador(${catIdx}, ${jugIdx}, 'apodo', this.value)">
+                    <label>Imagen URL:</label>
+                    <input type="text" value="${jugador.imagen}" onchange="updateJugador(${catIdx}, ${jugIdx}, 'imagen', this.value)" oninput="updateImagePreview(this.nextElementSibling, this.value)">
+                    <img src="${jugador.imagen}" alt="${jugador.nombre}" class="image-preview" onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+                `;
+                container.appendChild(jugadorDiv);
+            });
+        }
+
+        function renderFixture(catIdx) {
+            const container = document.getElementById(`fixture-container-${catIdx}`);
+            container.innerHTML = '';
+            data.categorias[catIdx].fixture.forEach((partido, partIdx) => {
+                const partidoDiv = document.createElement('div');
+                partidoDiv.classList.add('partido-item');
+                partidoDiv.innerHTML = `
+                    <button class="delete" onclick="eliminarPartido(${catIdx}, ${partIdx})">X</button>
+                    <label>Fecha:</label>
+                    <input type="text" value="${partido.fecha}" onchange="updatePartido(${catIdx}, ${partIdx}, 'fecha', this.value)">
+                    <label>Local:</label>
+                    <input type="text" value="${partido.local}" onchange="updatePartido(${catIdx}, ${partIdx}, 'local', this.value)">
+                    <label>Visitante:</label>
+                    <input type="text" value="${partido.visitante}" onchange="updatePartido(${catIdx}, ${partIdx}, 'visitante', this.value)">
+                    <label>Resultado:</label>
+                    <input type="text" value="${partido.resultado}" onchange="updatePartido(${catIdx}, ${partIdx}, 'resultado', this.value)">
+                `;
+                container.appendChild(partidoDiv);
+            });
+        }
+
+        function renderNoticias() {
+            const container = document.getElementById('noticias-container');
+            container.innerHTML = '';
+            data.noticias.forEach((noticia, notIdx) => {
+                const noticiaDiv = document.createElement('div');
+                noticiaDiv.classList.add('noticia-item');
+                noticiaDiv.innerHTML = `
+                    <h3>
+                        Título: <input type="text" value="${noticia.titulo}" onchange="updateNoticia(${notIdx}, 'titulo', this.value)">
+                        <button class="delete" onclick="eliminarNoticia(${notIdx})">Eliminar Noticia</button>
+                    </h3>
+                    <label>Contenido:</label>
+                    <textarea onchange="updateNoticia(${notIdx}, 'contenido', this.value)">${noticia.contenido}</textarea>
+                    <label>Imagen URL:</label>
+                    <input type="text" value="${noticia.imagen}" onchange="updateNoticia(${notIdx}, 'imagen', this.value)" oninput="updateImagePreview(this.nextElementSibling, this.value)">
+                    <img src="${noticia.imagen}" alt="Imagen Noticia" class="image-preview" onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+                    <label>Fecha (YYYY-MM-DD):</label>
+                    <input type="date" value="${noticia.fecha}" onchange="updateNoticia(${notIdx}, 'fecha', this.value)">
+                `;
+                container.appendChild(noticiaDiv);
+            });
+        }
+
+        function renderGaleria() {
+            const container = document.getElementById('galeria-container');
+            container.innerHTML = '';
+            data.galeria.forEach((item, galIdx) => {
+                const galeriaDiv = document.createElement('div');
+                galeriaDiv.classList.add('galeria-item');
+                galeriaDiv.innerHTML = `
+                    <h3>
+                        Título: <input type="text" value="${item.titulo}" onchange="updateGaleria(${galIdx}, 'titulo', this.value)">
+                        <button class="delete" onclick="eliminarGaleria(${galIdx})">Eliminar</button>
+                    </h3>
+                    <label>Imagen URL:</label>
+                    <input type="text" value="${item.imagen}" onchange="updateGaleria(${galIdx}, 'imagen', this.value)" oninput="updateImagePreview(this.nextElementSibling, this.value)">
+                    <img src="${item.imagen}" alt="Imagen Galería" class="image-preview" onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+                `;
+                container.appendChild(galeriaDiv);
+            });
+        }
+
+        // Mantener la renderización de descuentos por si hay datos existentes
+        function renderDescuentos() {
+            const container = document.getElementById('descuentos-container');
+            container.innerHTML = '';
+            data.descuentos.forEach((descuento, discIdx) => {
+                if (descuento.mensaje === undefined) {
+                    descuento.mensaje = "¡Descuento aplicado!";
+                }
+                const descuentoDiv = document.createElement('div');
+                descuentoDiv.classList.add('descuento-item');
+                descuentoDiv.innerHTML = `
+                    <h3>
+                        Código: <input type="text" value="${descuento.codigo}" onchange="updateDescuento(${discIdx}, 'codigo', this.value.toUpperCase())">
+                        <button class="delete" onclick="eliminarDescuento(${discIdx})">Eliminar</button>
+                    </h3>
+                    <label>Tipo:</label>
+                    <select onchange="updateDescuento(${discIdx}, 'tipo', this.value)">
+                        <option value="porcentaje" ${descuento.tipo === 'porcentaje' ? 'selected' : ''}>Porcentaje</option>
+                        <option value="monto_fijo" ${descuento.tipo === 'monto_fijo' ? 'selected' : ''}>Monto Fijo</option>
+                        <option value="fijo_0" ${descuento.tipo === 'fijo_0' ? 'selected' : ''}>Todo Gratis ($0)</option>
+                    </select>
+                    <label>Valor (ej: 10 para 10%, 500 para $500, 0 para todo gratis):</label>
+                    <input type="number" value="${descuento.valor}" onchange="updateDescuento(${discIdx}, 'valor', parseFloat(this.value) || 0)">
+                    <label>Mensaje (notificación al aplicar):</label>
+                    <input type="text" value="${descuento.mensaje}" onchange="updateDescuento(${discIdx}, 'mensaje', this.value)">
+                `;
+                container.appendChild(descuentoDiv);
+            });
+        }
+
+        // --- Funciones de Actualización de Datos ---
+        function updateClubInfo(campo, valor) {
+            data.clubInfo[campo] = valor;
+        }
+
+        function updateCategoria(catIdx, campo, valor) {
+            // Si el campo que se actualiza es el 'id', se debe validar el formato
+            if (campo === 'id') {
+                const cleanValue = valor.trim().toLowerCase(); // Asegurar minúsculas y sin espacios
+                if (!cleanValue.startsWith('cat') || cleanValue.length <= 3 || !/\d+$/.test(cleanValue)) {
+                    showMessage("El ID de la categoría debe empezar con 'cat' seguido de números (ej: cat2014).", "error");
+                    // Opcional: revertir el valor si es inválido
+                    document.querySelector(`#categorias-container > div:nth-child(${catIdx + 1}) input[title^='Este ID']`).value = data.categorias[catIdx].id;
+                    return;
+                }
+                // Verificar duplicados antes de actualizar
+                const isDuplicate = data.categorias.some((cat, index) => index !== catIdx && cat.id === cleanValue);
+                if (isDuplicate) {
+                    showMessage(`El ID '${cleanValue}' ya está en uso. Por favor, use un ID único.`, "error");
+                    document.querySelector(`#categorias-container > div:nth-child(${catIdx + 1}) input[title^='Este ID']`).value = data.categorias[catIdx].id;
+                    return;
+                }
+                data.categorias[catIdx][campo] = cleanValue;
+            } else {
+                data.categorias[catIdx][campo] = valor.trim();
+            }
+        }
+
+        function updateJugador(catIdx, jugIdx, campo, valor) {
+            data.categorias[catIdx].jugadores[jugIdx][campo] = valor.trim();
+        }
+
+        function updatePartido(catIdx, partIdx, campo, valor) {
+            data.categorias[catIdx].fixture[partIdx][campo] = valor.trim();
+        }
+
+        function updateNoticia(notIdx, campo, valor) {
+            data.noticias[notIdx][campo] = valor.trim();
+        }
+
+        function updateGaleria(galIdx, campo, valor) {
+            data.galeria[galIdx][campo] = valor.trim();
+        }
+
+        function updateDescuento(discIdx, campo, valor) {
+            data.descuentos[discIdx][campo] = valor;
+        }
+
+        function updateImagePreview(imgElement, imageUrl) {
+            imgElement.src = imageUrl;
+            // Opcional: añade un handler para que la imagen de preview no se rompa si la URL es mala
+            imgElement.onerror = "this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';";
+        }
+
+        // --- Funciones de Agregación ---
+        function agregarCategoria() {
+            const categoryYear = prompt("Ingrese el AÑO de la nueva categoría (ej: 2014). Este será parte del ID (cat2014) y del nombre del archivo HTML (cat2014.html).");
+            if (!categoryYear || categoryYear.trim() === "") {
+                showMessage("El año de la categoría no puede estar vacío.", "error");
+                return;
+            }
+            if (!/^\d{4}$/.test(categoryYear.trim())) {
+                showMessage("Por favor, ingrese un año válido de 4 dígitos (ej: 2014).", "error");
+                return;
+            }
+
+            const newId = `cat${categoryYear.trim()}`;
+            
+            // Opcional: Verificar si ya existe una categoría con ese ID/año
+            if (data.categorias.some(cat => cat.id === newId)) {
+                showMessage(`La categoría ${categoryYear} ya existe. Por favor, use un año diferente o edite la existente.`, "error");
+                return;
+            }
+
+            data.categorias.push({
+                id: newId,
+                nombre: `Categoría ${categoryYear}`,
+                fotoGrupal: "https://via.placeholder.com/600x400?text=Foto+Grupal",
+                descripcion: `Descripción de la categoría ${categoryYear}.`,
+                jugadores: [],
+                fixture: []
+            });
+            // No necesitamos incrementar nextId.categoria para el ID, ya que lo obtenemos del usuario.
+            // Pero podríamos usarlo para otros propósitos si quisiéramos IDs secuenciales en otras partes.
+            // data.nextId.categoria++; 
+            renderCategorias();
+            showMessage(`Categoría ${categoryYear} agregada. Recuerda crear el archivo HTML correspondiente en la carpeta 'categorias/': ${newId}.html`, "success");
+        }
+
+        function agregarJugador(catIdx) {
+            const newId = `jug${data.nextId.jugador++}`;
+            data.categorias[catIdx].jugadores.push({
+                id: newId,
+                nombre: "Nuevo Jugador",
+                apodo: "Sin Apodo",
+                imagen: "https://via.placeholder.com/250x250?text=Jugador"
+            });
+            renderJugadores(catIdx);
+        }
+
+        function agregarPartido(catIdx) {
+            data.categorias[catIdx].fixture.push({
+                fecha: "",
+                local: "Equipo Local",
+                visitante: "Equipo Visitante",
+                resultado: ""
+            });
+            renderFixture(catIdx);
+        }
+
+        function agregarNoticia() {
+            const newId = `not${data.nextId.noticia++}`;
+            data.noticias.push({
+                id: newId,
+                titulo: "Nueva Noticia",
+                contenido: "Contenido de la nueva noticia.",
+                imagen: "https://via.placeholder.com/300x200?text=Nueva+Noticia",
+                fecha: new Date().toISOString().split('T')[0] // Fecha actual
+            });
+            renderNoticias();
+        }
+
+        function agregarGaleria() {
+            const newId = `gal${data.nextId.galeria++}`;
+            data.galeria.push({
+                id: newId,
+                titulo: "Nueva Imagen Galería",
+                imagen: "https://via.placeholder.com/300x200?text=Nueva+Foto"
+            });
+            renderGaleria();
+        }
+
+        // Mantener la función de agregar descuento
+        function agregarDescuento() {
+            data.descuentos.push({
+                codigo: "NUEVO",
+                tipo: "porcentaje",
+                valor: 0,
+                mensaje: "¡Descuento aplicado!"
+            });
+            renderDescuentos();
+        }
+
+        // --- Funciones de Eliminación ---
+        function eliminarCategoria(catIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta categoría y todos sus jugadores y fixture?')) {
+                data.categorias.splice(catIdx, 1);
+                renderCategorias();
+            }
+        }
+
+        function eliminarJugador(catIdx, jugIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar este jugador?')) {
+                data.categorias[catIdx].jugadores.splice(jugIdx, 1);
+                renderJugadores(catIdx);
+            }
+        }
+
+        function eliminarPartido(catIdx, partIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar este partido?')) {
+                data.categorias[catIdx].fixture.splice(partIdx, 1);
+                renderFixture(catIdx);
+            }
+        }
+
+        function eliminarNoticia(notIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta noticia?')) {
+                data.noticias.splice(notIdx, 1);
+                renderNoticias();
+            }
+        }
+
+        function eliminarGaleria(galIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar este elemento de la galería?')) {
+                data.galeria.splice(galIdx, 1);
+                renderGaleria();
+            }
+        }
+
+        // Mantener la función de eliminar descuento
+        function eliminarDescuento(discIdx) {
+            if (confirm('¿Estás seguro de que quieres eliminar este descuento?')) {
+                data.descuentos.splice(discIdx, 1);
+                renderDescuentos();
+            }
+        }
+
+        // --- Funciones de Guardado y Copiado ---
+        function guardarDatos() {
+            // Asegúrate de que el objeto 'club' exista y tenga la estructura adecuada
+            // antes de guardar, si el 'editor.html' gestiona clubInfo de otra forma.
+            // Aquí se asume que clubInfo en el editor se mapea directamente a 'club' en data.json
+            // para compatibilidad con el frontend.
+            const dataToSave = {
+                club: {
+                    name: data.clubInfo.name || "Club Atlético Villa Canto", // Puedes hacer un input para el nombre del club
+                    logo: data.clubInfo.logo || "images/logo.png", // Puedes hacer un input para el logo
+                    socialLinks: {
+                        facebook: data.clubInfo.facebook || "#",
+                        instagram: data.clubInfo.instagram || "#",
+                        youtube: data.clubInfo.youtube || "#" // Usar youtube en lugar de twitter
+                    },
+                    history: data.clubInfo.historia || "",
+                    values: data.clubInfo.valores || [],
+                    facilities: data.clubInfo.instalaciones || "",
+                    contact: {
+                        phone: data.clubInfo.telefono || "",
+                        email: data.clubInfo.email || "",
+                        address: data.clubInfo.direccion || "",
+                        mapIframe: data.clubInfo.mapaIframe || ""
+                    }
+                },
+                categories: data.categorias.map(cat => ({
+                    id: cat.id.replace('cat', ''), // Convertir de "cat2013" a "2013" para el main.js del sitio web
+                    name: cat.nombre,
+                    photo: cat.fotoGrupal,
+                    description: cat.descripcion,
+                    players: cat.jugadores,
+                    fixture: cat.fixture
+                })),
+                news: data.noticias,
+                gallery: data.galeria,
+                discounts: data.descuentos // Mantener descuentos
+                // nextId no se guarda en data.json, es solo para el editor
+            };
+
+
+            const jsonString = JSON.stringify(dataToSave, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showMessage('data.json guardado y descargado exitosamente! No olvides reemplazar tu data.json existente.', 'success');
+        }
+
+        function mostrarJsonParaCopiar() {
+            const jsonOutput = document.getElementById('json-output');
+            const jsonContainer = document.getElementById('json-output-container');
+            // Mismo mapeo que en guardarDatos para mostrar el JSON compatible con el frontend
+            const dataToDisplay = {
+                club: {
+                    name: data.clubInfo.name || "Club Atlético Villa Canto",
+                    logo: data.clubInfo.logo || "images/logo.png",
+                    socialLinks: {
+                        facebook: data.clubInfo.facebook || "#",
+                        instagram: data.clubInfo.instagram || "#",
+                        youtube: data.clubInfo.youtube || "#"
+                    },
+                    history: data.clubInfo.historia || "",
+                    values: data.clubInfo.valores || [],
+                    facilities: data.clubInfo.instalaciones || "",
+                    contact: {
+                        phone: data.clubInfo.telefono || "",
+                        email: data.clubInfo.email || "",
+                        address: data.clubInfo.direccion || "",
+                        mapIframe: data.clubInfo.mapaIframe || ""
+                    }
+                },
+                categories: data.categorias.map(cat => ({
+                    id: cat.id.replace('cat', ''), // Convertir de "cat2013" a "2013"
+                    name: cat.nombre,
+                    photo: cat.fotoGrupal,
+                    description: cat.descripcion,
+                    players: cat.jugadores,
+                    fixture: cat.fixture
+                })),
+                news: data.noticias,
+                gallery: data.galeria,
+                discounts: data.descuentos
+            };
+            jsonOutput.value = JSON.stringify(dataToDisplay, null, 2);
+            jsonContainer.style.display = 'block';
+        }
+
+        function copiarJson() {
+            const jsonOutput = document.getElementById('json-output');
+            jsonOutput.select();
+            document.execCommand('copy');
+            showMessage('JSON copiado al portapapeles!', 'success');
+        }
+
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = msg;
+            messageDiv.className = `alert-message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000); // Mostrar por 5 segundos
+        }
+
+        // Ajuste en cargarDatosDesdeArchivo para mapear el formato de data.json al editor
+        // Cuando carga data.json, transforma los IDs de categoría de "2013" a "cat2013"
+        async function cargarDatosDesdeArchivo() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+
+                // Mapear data.json a la estructura interna del editor
+                data.clubInfo = {
+                    historia: rawData.club.history || "",
+                    valores: rawData.club.values || [],
+                    instalaciones: rawData.club.facilities || "",
+                    telefono: rawData.club.contact.phone || "",
+                    email: rawData.club.contact.email || "",
+                    direccion: rawData.club.contact.address || "",
+                    facebook: rawData.club.socialLinks.facebook || "",
+                    instagram: rawData.club.socialLinks.instagram || "",
+                    youtube: rawData.club.socialLinks.youtube || "",
+                    mapaIframe: rawData.club.contact.mapIframe || ""
+                };
+                
+                data.categorias = rawData.categories.map(cat => ({
+                    id: `cat${cat.id}`, // Convertir de "2013" a "cat2013" para el editor
+                    nombre: cat.name,
+                    fotoGrupal: cat.photo,
+                    descripcion: cat.description,
+                    jugadores: cat.players,
+                    fixture: cat.fixture
+                })) || [];
+
+                data.noticias = rawData.news || [];
+                data.galeria = rawData.gallery || [];
+                data.descuentos = rawData.discounts || [];
+
+                // Re-calcular nextId para jugadores, noticias, galeria basándose en los IDs existentes
+                data.nextId.jugador = 1;
+                data.categorias.forEach(cat => {
+                    cat.jugadores.forEach(jug => {
+                        const jugIdNum = parseInt(jug.id.replace('jug', ''));
+                        if (!isNaN(jugIdNum) && jugIdNum >= data.nextId.jugador) {
+                            data.nextId.jugador = jugIdNum + 1;
+                        }
+                    });
+                });
+
+                data.nextId.noticia = 1;
+                data.noticias.forEach(not => {
+                    const notIdNum = parseInt(not.id.replace('not', ''));
+                    if (!isNaN(notIdNum) && notIdNum >= data.nextId.noticia) {
+                        data.nextId.noticia = notIdNum + 1;
+                    }
+                });
+
+                data.nextId.galeria = 1;
+                data.galeria.forEach(gal => {
+                    const galIdNum = parseInt(gal.id.replace('gal', ''));
+                    if (!isNaN(galIdNum) && galIdNum >= data.nextId.galeria) {
+                        data.nextId.galeria = galIdNum + 1;
+                    }
+                });
+
+                renderClubInfo();
+                renderCategorias();
+                renderNoticias();
+                renderGaleria();
+                renderDescuentos();
+            } catch (error) {
+                console.error('Error al cargar data.json:', error);
+                // Si no se carga, inicializa con datos vacíos para que se pueda empezar a editar
+                data = {
+                    clubInfo: {
+                        historia: "", valores: [], instalaciones: "",
+                        telefono: "", email: "", direccion: "",
+                        facebook: "", instagram: "", youtube: "", mapaIframe: ""
+                    },
+                    categorias: [],
+                    noticias: [],
+                    galeria: [],
+                    descuentos: [],
+                    nextId: { categoria: 1, jugador: 1, noticia: 1, galeria: 1 }
+                };
+                renderClubInfo();
+                renderCategorias();
+                renderNoticias();
+                renderGaleria();
+                renderDescuentos();
+                showMessage('No se pudo cargar data.json. Asegúrate de que existe y es un JSON válido. Se inicializará con valores por defecto.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
