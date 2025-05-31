@@ -70,7 +70,7 @@ a:hover {
     color: var(--accent-color);
 }
 
-.btn-hero {
+.btn-hero, .btn { /* Unificado el estilo para los botones */
     display: inline-block;
     background-color: var(--accent-color);
     color: var(--text-light);
@@ -79,9 +79,11 @@ a:hover {
     text-transform: uppercase;
     font-weight: bold;
     transition: background-color 0.3s ease;
+    border: none; /* Asegura que no haya borde predeterminado */
+    cursor: pointer;
 }
 
-.btn-hero:hover {
+.btn-hero:hover, .btn:hover {
     background-color: #006400; /* Color alternativo para hover */
 }
 
@@ -180,32 +182,65 @@ nav ul li a:hover {
     display: block;
 }
 
+/* Burger Menu - Solo visible en móvil */
+.burger {
+    display: none; /* Oculto por defecto */
+    cursor: pointer;
+    padding: 10px;
+}
+.burger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-light);
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+
+
 /* --- SECCIÓN HERO --- */
 #hero {
     position: relative;
     width: 100%;
-    overflow: hidden; /* Asegura que la imagen no se salga */
-}
-
-.hero-banner {
-    width: 100%; /* Asegura que la imagen ocupe todo el ancho */
-    height: auto; /* Mantiene la proporción */
-    display: block; /* Elimina espacio extra debajo de la imagen */
-}
-
-.hero-content {
-    position: relative; /* Ajustado para que el banner sea la imagen directa */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    height: 500px; /* Altura fija para el hero */
+    overflow: hidden; 
+    display: flex; /* Usamos flexbox para centrar el contenido */
     align-items: center;
+    justify-content: center;
     text-align: center;
     color: var(--text-light);
-    padding: 50px 20px; /* Puedes añadir padding si quieres texto superpuesto */
+}
+
+#hero .hero-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra todo el espacio sin distorsionarse */
+    z-index: 1; /* Para que el contenido esté por encima */
+}
+
+#hero .hero-content {
+    position: relative; /* Para que esté por encima del banner */
+    z-index: 2;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para legibilidad */
+    border-radius: 10px;
+}
+
+#hero .hero-content h2 {
+    color: var(--text-light);
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+#hero .hero-content p {
+    font-size: 1.5em;
+    margin-bottom: 30px;
 }
 
 /* --- SECCIÓN NUESTRO CLUB --- */
-#nuestro-club .club-info {
+#nuestro-club .club-info-grid { 
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -213,7 +248,7 @@ nav ul li a:hover {
     padding: 0 20px;
 }
 
-#nuestro-club .info-block {
+#nuestro-club .info-item { 
     background-color: var(--card-background);
     padding: 30px;
     border-radius: 10px;
@@ -223,31 +258,59 @@ nav ul li a:hover {
     text-align: center;
 }
 
-#nuestro-club .info-block h3 {
+#nuestro-club .info-item h3 { 
     color: var(--accent-color);
     margin-bottom: 15px;
     font-size: 1.5em;
 }
 
-#nuestro-club .info-block ul {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    margin-top: 15px;
+/* **Nuevos estilos para la sección de Valores** */
+
+#nuestro-club .values-section-container .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* 2 columnas en pantallas más grandes */
+    gap: 15px; /* Espacio entre las tarjetas de valores */
+    margin-top: 20px;
 }
 
-#nuestro-club .info-block ul li {
-    margin-bottom: 8px;
-    color: var(--text-dark);
+#nuestro-club .value-card {
+    background-color: var(--secondary-color); /* Un fondo ligeramente diferente para las tarjetas de valor */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 120px; /* Altura mínima para que sean uniformes */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 1px solid var(--border-color); /* Borde sutil */
 }
 
-#nuestro-club .info-block ul li i {
-    color: var(--primary-color);
-    margin-right: 10px;
-    font-size: 1.2em;
+#nuestro-club .value-card:hover {
+    transform: translateY(-5px); /* Efecto de elevación al pasar el ratón */
+    background-color: #e8e8e8; /* Un poco más oscuro al pasar el ratón */
 }
+
+#nuestro-club .value-card i {
+    font-size: 2.5em; /* Tamaño grande para el icono */
+    color: var(--primary-color); /* Color del icono */
+    margin-bottom: 10px; /* Espacio entre el icono y el texto */
+    transition: color 0.3s ease;
+}
+
+#nuestro-club .value-card:hover i {
+    color: var(--accent-color); /* Cambia el color del icono al pasar el ratón */
+}
+
+#nuestro-club .value-card p {
+    font-weight: 600; /* Texto del valor en negrita */
+    color: var(--text-dark);
+    margin: 0; /* Asegura que no haya márgenes extra */
+    font-size: 0.95em;
+}
+
 
 /* --- SECCIÓN NOTICIAS --- */
 #noticias .news-grid {
@@ -257,50 +320,81 @@ nav ul li a:hover {
     padding: 0 20px;
 }
 
+/* Estilos para la tarjeta de noticia (news-card) */
 .news-card {
-    background-color: var(--card-background);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease;
+    background-color: var(--card-background); /* Fondo blanco para la tarjeta */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave para efecto de tarjeta */
+    overflow: hidden; /* Asegura que el contenido no se salga de los bordes redondeados */
+    transition: transform 0.3s ease; /* Transición suave al pasar el ratón */
+    display: flex; /* Habilitar flexbox para el diseño interno */
+    flex-direction: column; /* Apilar elementos verticalmente */
+    height: 100%; /* Asegura que todas las tarjetas tengan la misma altura en el grid */
 }
 
 .news-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* Efecto de elevación al pasar el ratón */
 }
 
-.news-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
+/* Estilos para el contenedor del contenido (texto y botón) */
+.news-card .card-content {
+    padding: 15px; /* Espaciado interno para el texto */
+    flex-grow: 1; /* Permite que este div ocupe el espacio restante en la tarjeta */
+    display: flex; /* Habilita flexbox para su contenido interno */
+    flex-direction: column; /* Apila el título, fecha, imagen, párrafo y botón */
 }
 
+/* Estilos para el título de la noticia */
 .news-card h3 {
-    padding: 15px;
     font-size: 1.3em;
     color: var(--primary-color);
+    margin-bottom: 5px; /* Espacio debajo del título */
+    /* Padding ya se resetea a 0 por el card-content */
 }
 
+/* Estilos para la fecha de la noticia */
+.news-card .news-date {
+    font-size: 0.85em;
+    color: #777; /* Un color más suave para la fecha */
+    margin-bottom: 15px; /* Espacio debajo de la fecha, antes de la imagen */
+}
+
+/* Estilos para la imagen dentro de la tarjeta de noticia */
+.news-card img {
+    width: 100%; /* La imagen ocupa todo el ancho de la tarjeta */
+    height: 200px; /* Altura fija para todas las imágenes de noticias */
+    object-fit: cover; /* Recorta la imagen para que cubra el espacio sin distorsionarse */
+    display: block; /* Elimina espacio extra debajo de la imagen */
+    margin-bottom: 15px; /* Añade margen después de la imagen y antes del texto */
+    border-radius: 5px; /* Suaves bordes para la imagen */
+}
+
+/* Estilos para el párrafo de la noticia */
 .news-card p {
-    padding: 0 15px 15px;
     font-size: 0.95em;
     color: #555;
+    margin-bottom: 15px; /* Espacio antes del botón "Leer más" */
+    flex-grow: 1; /* Permite que el párrafo ocupe el espacio disponible antes del botón */
+    /* Padding ya se resetea a 0 por el card-content */
 }
 
+/* Estilos para el enlace "Leer más" */
 .news-card .read-more {
-    display: block;
+    display: block; /* Asegura que ocupe su propia línea */
     padding: 10px 15px;
     background-color: var(--primary-color);
     color: var(--text-light);
     text-align: center;
     font-weight: bold;
+    border-radius: 5px; /* Bordes redondeados para el botón */
     transition: background-color 0.3s ease;
+    margin-top: auto; /* Empuja el botón al final del card-content */
 }
 
 .news-card .read-more:hover {
     background-color: #8C0000; /* Color alternativo para hover */
 }
+
 
 /* --- SECCIÓN GALERÍA --- */
 #galeria .gallery-grid {
@@ -391,6 +485,70 @@ nav ul li a:hover {
     transform: translateY(-5px);
 }
 
+/* --- SECCIÓN DESCUENTOS (NUEVO) --- */
+#descuentos .descuentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+}
+
+#descuentos .descuento-card {
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+#descuentos .descuento-card:hover {
+    transform: translateY(-5px);
+}
+
+#descuentos .descuento-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+#descuentos .descuento-card .card-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#descuentos .descuento-card h3 {
+    font-size: 1.4em;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+#descuentos .descuento-card p {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+#descuentos .descuento-card .descuento-code {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    margin-top: auto; /* Empuja el código al final */
+}
+
+#descuentos .descuento-card .descuento-validez {
+    font-size: 0.85em;
+    color: #888;
+    margin-top: 5px;
+}
+
+
 /* --- FOOTER --- */
 footer {
     background-color: var(--background-dark);
@@ -401,19 +559,74 @@ footer {
     margin-top: 30px;
 }
 
-footer .social-links {
-    margin-top: 15px;
+footer .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: left;
+    margin-bottom: 20px;
 }
 
-footer .social-links a {
+footer .footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin: 15px;
+}
+
+footer .footer-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+footer .footer-section p,
+footer .footer-section ul li {
     color: var(--text-light);
-    font-size: 1.5em;
-    margin: 0 10px;
+    margin-bottom: 8px;
+}
+
+footer .footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+footer .footer-section ul li a {
+    color: var(--text-light);
     transition: color 0.3s ease;
 }
 
-footer .social-links a:hover {
+footer .footer-section ul li a:hover {
+    color: var(--accent-color);
+}
+
+footer .contact-links p i {
+    margin-right: 8px;
+    color: var(--accent-color);
+}
+
+footer .social a {
+    display: block;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+footer .social a i {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+footer .social a:hover {
     color: var(--primary-color);
+}
+
+footer .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 15px;
+    margin-top: 20px;
+    color: #ccc;
+    font-size: 0.85em;
 }
 
 
@@ -557,12 +770,7 @@ h3 { /* Ajustar si los h3 dentro de #category-detail no tienen el margen correct
 
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
-    /* CAMBIO: Media Query para la imagen grupal en móviles */
-    .category-info .team-photo { 
-        max-width: 95%; /* Un poco más de ancho en móviles */
-        margin: 15px auto;
-    }
-
+    /* Header y Navegación */
     header {
         flex-direction: column;
         align-items: flex-start;
@@ -574,37 +782,147 @@ h3 { /* Ajustar si los h3 dentro de #category-detail no tienen el margen correct
         width: 100%;
         justify-content: center;
     }
-    nav ul {
+    nav {
+        width: 100%;
+        display: flex; /* Para que el burger y el nav-links estén en la misma línea */
+        justify-content: flex-end; /* Empuja el burger a la derecha */
+        position: relative; /* Para posicionar el nav-links absoluto */
+    }
+    nav ul.nav-links {
+        display: none; /* Oculto por defecto en móvil */
         flex-direction: column;
         width: 100%;
-        padding-right: 0;
-        align-items: center;
+        position: absolute;
+        top: 60px; /* Ajusta según la altura de tu header */
+        left: 0;
+        background-color: var(--background-dark);
+        padding: 10px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 999;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+    }
+    nav ul.nav-links.nav-active {
+        display: flex;
+        max-height: 500px; /* Una altura suficiente para mostrar todos los enlaces */
     }
     nav ul li {
-        margin: 5px 0;
+        margin: 0;
         width: 100%;
         text-align: center;
+    }
+    nav ul li a {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    nav ul li:last-child a {
+        border-bottom: none;
     }
     .dropdown-content {
         position: static; /* Cambia a posición estática para que se muestre en el flujo normal */
         width: 100%;
         box-shadow: none;
         border-top: none;
+        background-color: #333; /* Un color ligeramente diferente para los ítems del submenú */
     }
     .dropdown-content a {
         padding: 8px 0;
-        background-color: #3d3d3d; /* Un color ligeramente diferente para los ítems del dropdown */
+    }
+    .burger {
+        display: block; /* Muestra el icono hamburguesa */
+    }
+    .burger.toggle .line1 {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+    .burger.toggle .line2 {
+        opacity: 0;
+    }
+    .burger.toggle .line3 {
+        transform: rotate(45deg) translate(-5px, -6px);
     }
 
-    #nuestro-club .club-info .info-block {
+    /* Hero Section */
+    #hero {
+        height: 400px;
+    }
+    #hero .hero-content h2 {
+        font-size: 2.2em;
+    }
+    #hero .hero-content p {
+        font-size: 1.2em;
+    }
+    .btn-hero {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    /* Nuestro Club */
+    #nuestro-club .info-item { 
         flex-basis: 100%;
     }
-    .news-card {
+    #nuestro-club .values-section-container .values-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+    }
+    #nuestro-club .value-card {
+        padding: 15px;
+        min-height: 100px;
+    }
+    #nuestro-club .value-card i {
+        font-size: 2em;
+    }
+    #nuestro-club .value-card p {
+        font-size: 0.85em;
+    }
+
+    /* Noticias, Galería, Descuentos */
+    .news-card, .descuento-card {
         margin: 0 auto;
         max-width: 400px;
     }
     #galeria .gallery-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    /* Contacto */
+    #contacto .map-container iframe {
+        height: 300px;
+    }
+
+    /* Footer */
+    footer .footer-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    footer .footer-section {
+        margin: 10px 0;
+    }
+    footer .footer-section ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    footer .social a {
+        display: inline-block;
+        margin: 0 10px;
+    }
+
+    /* Categoría específica */
+    .category-info .team-photo { 
+        max-width: 95%; 
+        margin: 15px auto;
+    }
+    .fixture-table th,
+    .fixture-table td {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+    .players-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .player-photo {
+        height: 180px;
     }
 }
 
@@ -612,13 +930,5 @@ h3 { /* Ajustar si los h3 dentro de #category-detail no tienen el margen correct
     h2 {
         font-size: 2em;
     }
-    .btn-hero {
-        padding: 10px 20px;
-        font-size: 0.9em;
-    }
-    .fixture-table th,
-    .fixture-table td {
-        padding: 8px 10px;
-        font-size: 0.9em;
-    }
+    /* El .btn-hero ya se ajusta en 768px, pero puedes refinar aquí si es necesario */
 }
