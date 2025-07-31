@@ -340,8 +340,10 @@ function renderContacto() {
                     ${allData.club.socialLinks?.youtube && allData.club.socialLinks.youtube !== '#' ? `<a href="${allData.club.socialLinks.youtube}" target="_blank"><i class="fab fa-youtube"></i></a>` : ''}
                 </div>
                 <div class="map-container">
-                    ${allData.club.contact?.mapIframe || '<p>Mapa no disponible.</p>'}
-                </div>
+    ${allData.club.contact?.mapaIframe ? 
+    `<iframe src="${allData.club.contact.mapaIframe}" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>` 
+    : '<p>Mapa no disponible.</p>'}
+</div>
             </div>
         </div>
     `;
