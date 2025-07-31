@@ -347,38 +347,6 @@ function renderContacto() {
     `;
 }
 
-// Nueva función para renderizar la sección de descuentos (si existe)
-function renderDescuentos() {
-    const descuentosSection = document.getElementById('descuentos');
-    // Acceso a allData.discounts
-    if (!descuentosSection || !allData.discounts || allData.discounts.length === 0) return;
-
-    const descuentosGrid = document.createElement('div');
-    descuentosGrid.classList.add('descuentos-grid');
-
-    allData.discounts.forEach(descuento => {
-        const descuentoCard = document.createElement('div');
-        descuentoCard.classList.add('descuento-card');
-        descuentoCard.innerHTML = `
-            <img src="${descuento.imagen}" alt="${descuento.titulo}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=Descuento+no+disponible';">
-            <div class="card-content">
-                <h3>${descuento.titulo}</h3>
-                <p>${descuento.descripcion}</p>
-                <p class="descuento-code">Código: <strong>${descuento.codigo}</strong></p>
-                <p class="descuento-validez">Válido hasta: ${descuento.validez}</p>
-            </div>
-        `;
-        descuentosGrid.appendChild(descuentoCard);
-    });
-
-    descuentosSection.innerHTML = `
-        <div class="container">
-            <h2>Descuentos Exclusivos</h2>
-            ${descuentosGrid.outerHTML}
-        </div>
-    `;
-}
-
 // Función para renderizar la página de una categoría específica
 function renderCategoryPage(categoryId) {
     const categoryDetailSection = document.getElementById('category-detail');
